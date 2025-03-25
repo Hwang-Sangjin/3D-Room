@@ -1,13 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SideItem from "./SideItem";
 import url from "../../constants/url";
+import { useRecoilState } from "recoil";
+import * as THREE from "three";
+import { AddedObjListState } from "../../recoil/atoms/AddedObjListState";
+import { SelectedObjState } from "../../recoil/atoms/SelectedObjState";
 
 function Sidebar({ ObjList }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
+  const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
   const ObjListArr = Object.keys(ObjList);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const onClickSidebarItem = ({ e, imagePath, meshPath }) => {
+    const objState = {
+      name: e,
+      meshPath: meshPath,
+      imagePath: imagePath,
+      position: new THREE.Vector3(0, 0, 0),
+      rotation: new THREE.Vector3(0, 0, 0),
+    };
+    setAddedObjList((prev) => {
+      return [...prev, objState];
+    });
+
+    setSelectedObj(e);
   };
 
   return (
@@ -50,7 +72,12 @@ function Sidebar({ ObjList }) {
               const meshPath = ObjList[e]["mesh"];
 
               return (
-                <li key={key}>
+                <li
+                  onClick={() => {
+                    onClickSidebarItem({ e, imagePath, meshPath });
+                  }}
+                  key={key}
+                >
                   <SideItem imagePath={imagePath} meshPath={meshPath} />
                 </li>
               );
