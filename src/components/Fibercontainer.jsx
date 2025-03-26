@@ -6,10 +6,13 @@ import { useEffect } from "react";
 import url from "../constants/url";
 import { useRecoilState } from "recoil";
 import { ObjListState } from "../recoil/atoms/ObjListState";
+import SpinnerLoader from "./etc/SpinnerLoader";
+import { ObjLoaderState } from "../recoil/atoms/ObjLoaderState";
 
 const FiberContainer = () => {
   const objectListUrl = url.MART_API_URL + "objects/list.json";
   const [ObjList, setObjList] = useRecoilState(ObjListState);
+  const [objLoader, setObjLoader] = useRecoilState(ObjLoaderState);
 
   const getList = () => {
     axios.get(objectListUrl).then((res) => {
@@ -25,6 +28,7 @@ const FiberContainer = () => {
     <>
       <Experience />
       <Loader />
+      {objLoader ? <SpinnerLoader /> : null}
       <Sidebar ObjList={ObjList} />
     </>
   );

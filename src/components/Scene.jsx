@@ -12,6 +12,7 @@ import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { AddedObjListState } from "../recoil/atoms/AddedObjListState";
 import Object3D from "./3Dmodel/Object3D";
 import { SelectedObjState } from "../recoil/atoms/SelectedObjState";
+import { ObjModalState } from "../recoil/atoms/ObjModalState";
 
 const Scene = () => {
   const [hovered, hover] = useState(null);
@@ -21,6 +22,7 @@ const Scene = () => {
   const [savedTarget, setSavedTarget] = useState(new THREE.Vector3(0, 0, 0));
 
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
+  const [objModal, setObjModal] = useRecoilState(ObjModalState);
 
   // const handleClick = useCallback(() => {
   //   if (selectedObj) {
@@ -59,7 +61,11 @@ const Scene = () => {
           setSavedTarget(e.point.clone());
         }}
         onClick={(e) => {
+          setObjModal(null);
           handlePlaneClick(e.point);
+        }}
+        onContextMenu={() => {
+          setObjModal(null);
         }}
       />
 

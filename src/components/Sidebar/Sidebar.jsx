@@ -17,9 +17,9 @@ function Sidebar({ ObjList }) {
     setIsOpen(!isOpen);
   };
 
-  const onClickSidebarItem = ({ e, imagePath, meshPath }) => {
+  const onClickSidebarItem = ({ name, imagePath, meshPath }) => {
     const objState = {
-      name: e,
+      name: name,
       meshPath: meshPath,
       imagePath: imagePath,
       position: new THREE.Vector3(0, 0, 0),
@@ -29,7 +29,7 @@ function Sidebar({ ObjList }) {
       return [...prev, objState];
     });
 
-    setSelectedObj(e);
+    setSelectedObj(name);
   };
 
   return (
@@ -70,11 +70,11 @@ function Sidebar({ ObjList }) {
               const key = `sidebarObjectList${index}`;
               const imagePath = ObjList[e]["thumbnail"];
               const meshPath = ObjList[e]["mesh"];
-
+              const name = e + "-" + addedObjList.length;
               return (
                 <li
                   onClick={() => {
-                    onClickSidebarItem({ e, imagePath, meshPath });
+                    onClickSidebarItem({ name, imagePath, meshPath });
                   }}
                   key={key}
                 >
