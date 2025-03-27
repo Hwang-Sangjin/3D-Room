@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import IloomChair1 from "./3Dmodel/Iloom/IloomChair1";
-import IloomChair2 from "./3Dmodel/Iloom/IloomChair2";
+
 import Plane from "./Plane";
-import { debounce } from "lodash";
+
 import { Select } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useRecoilState } from "recoil";
-import url from "../constants/url";
-import axios from "axios";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
+
 import { AddedObjListState } from "../recoil/atoms/AddedObjListState";
 import Object3D from "./3Dmodel/Object3D";
 import { SelectedObjState } from "../recoil/atoms/SelectedObjState";
 import { ObjModalState } from "../recoil/atoms/ObjModalState";
+import { useThree } from "@react-three/fiber";
+import { ViewModeState } from "../recoil/atoms/ViewModeState";
 
 const Scene = () => {
   const [hovered, hover] = useState(null);
@@ -24,22 +23,26 @@ const Scene = () => {
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
   const [objModal, setObjModal] = useRecoilState(ObjModalState);
 
-  // const handleClick = useCallback(() => {
-  //   if (selectedObj) {
-  //     setSelectedObj(null);
-  //     setOnMoving(false);
-  //   } else {
-  //     setOnMoving(true);
-  //   }
-  // }, [selectedObj]);
+  const { camera } = useThree();
+  const [viewMode, setViewMode] = useRecoilState(ViewModeState);
 
-  // useEffect(() => {
-  //   window.addEventListener("click", handleClick);
-
-  //   return () => {
-  //     window.removeEventListener("click", handleClick);
-  //   };
-  // }, [handleClick]);
+  useEffect(() => {
+    if (viewMode === "2D") {
+      camera.position.set(0, 7, 0);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      camera.near = 0.1;
+      camera.far = 20;
+      camera.zoom = 1;
+      camera.updateProjectionMatrix();
+    } else if (viewMode === "3D") {
+      camera.position.set(0, 3, 3);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      camera.fov = 75;
+      camera.near = 0.1;
+      camera.far = 100;
+      camera.updateProjectionMatrix();
+    }
+  }, [viewMode, camera]);
 
   const handlePlaneClick = (point) => {
     if (selectedObj !== null) {
@@ -69,27 +72,6 @@ const Scene = () => {
         }}
       />
 
-      {/* <ETCGroup />
-                    <ElectronicsGroup />
-            
-                    <FurnitureGroup /> */}
-
-      {/* {selectedSidebarMesh ? (
-        <Select
-          enabled={hovered === selectedSidebarObj.name}
-          onPointerOver={over(selectedSidebarObj.name)}
-          onPointerOut={() => debouncedHover(null)}
-          onClick={() => {
-            setSelectedObj(selectedSidebarObj.name);
-          }}
-        >
-          <primitive
-            position={savedTarget}
-            object={selectedSidebarMesh.scene}
-          />
-        </Select>
-      ) : null} */}
-
       {addedObjList.map((e, index) => {
         const key = `addedObj${index}`;
         return (
@@ -103,27 +85,6 @@ const Scene = () => {
         );
         // return <primitive position={e.position} />;
       })}
-
-      {/* <Select
-        enabled={hovered === "Chair1"}
-        onPointerOver={over("Chair1")}
-        onPointerOut={() => debouncedHover(null)}
-        onClick={() => {
-          setSelectedObj("Chair1");
-        }}
-      >
-        <IloomChair1 position={savedTarget[0]} />
-      </Select>
-      <Select
-        enabled={hovered === "Chair2"}
-        onPointerOver={over("Chair2")}
-        onPointerOut={() => debouncedHover(null)}
-        onClick={() => {
-          setSelectedObj("Chair2");
-        }}
-      >
-        <IloomChair2 position={savedTarget[1]} />
-      </Select> */}
     </>
   );
 };

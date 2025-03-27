@@ -8,12 +8,15 @@ import { ObjLoaderState } from "../../recoil/atoms/ObjLoaderState";
 import * as THREE from "three";
 import ObjectControlModal from "../etc/ObjectControlModal";
 import { ObjModalState } from "../../recoil/atoms/ObjModalState";
+import { OnGizmoState } from "../../recoil/atoms/OnGizmoState";
+import { PivotControls } from "@react-three/drei";
 
 const Object3D = ({ meshPath, name, position }) => {
   const [gltf, setGltf] = useState(null);
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
   const [objLoader, setObjLoader] = useRecoilState(ObjLoaderState);
   const [objModal, setObjModal] = useRecoilState(ObjModalState);
+  const [onGizmo, setOnGizmo] = useRecoilState(OnGizmoState);
   const [htmlPosition, setHtmlPosition] = useState(new THREE.Vector3());
   const meshRef = useRef();
 
@@ -48,29 +51,43 @@ const Object3D = ({ meshPath, name, position }) => {
   if (!gltf) return null;
 
   return (
-    <primitive
-      ref={meshRef}
-      object={gltf.scene}
+    <PivotControls
+      depthTest={false}
       position={position}
-      name={name}
-      onClick={(e) => {
-        //setSelectedObj(name);
-        setObjModal(null);
+      scale={0.5}
+      onDrag={() => {
+        setOnGizmo(true);
       }}
-      onContextMenu={(e) => {
-        e.stopPropagation();
-        setObjModal(name);
+      onDragEnd={() => {
+        setOnGizmo(false);
       }}
+      visible={selectedObj === name}
+      enabled={false}
     >
-      {name === objModal ? (
-        <ObjectControlModal
-          scene={gltf.scene.matrix}
-          name={name}
-          meshPath={meshPath}
-          position={htmlPosition}
-        />
-      ) : null}
-    </primitive>
+      <primitive
+        ref={meshRef}
+        object={gltf.scene}
+        name={name}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedObj(name);
+          setObjModal(null);
+        }}
+        onContextMenu={(e) => {
+          e.stopPropagation();
+          setObjModal(name);
+        }}
+      >
+        {name === objModal ? (
+          <ObjectControlModal
+            scene={gltf.scene.matrix}
+            name={name}
+            meshPath={meshPath}
+            position={htmlPosition}
+          />
+        ) : null}
+      </primitive>
+    </PivotControls>
   );
 };
 

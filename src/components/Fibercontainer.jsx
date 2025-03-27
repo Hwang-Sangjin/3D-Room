@@ -8,6 +8,7 @@ import { useRecoilState } from "recoil";
 import { ObjListState } from "../recoil/atoms/ObjListState";
 import SpinnerLoader from "./etc/SpinnerLoader";
 import { ObjLoaderState } from "../recoil/atoms/ObjLoaderState";
+import ViewModeUI from "./UI/ViewModeUI";
 
 const FiberContainer = () => {
   const objectListUrl = url.MART_API_URL + "objects/list.json";
@@ -30,6 +31,7 @@ const FiberContainer = () => {
       <Loader />
       {objLoader ? <SpinnerLoader /> : null}
       <Sidebar ObjList={ObjList} />
+      <ViewModeUI />
     </>
   );
 };
