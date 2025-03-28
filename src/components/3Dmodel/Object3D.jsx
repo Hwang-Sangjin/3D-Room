@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import url from "../../constants/url";
 import axios from "axios";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
@@ -10,6 +10,7 @@ import ObjectControlModal from "../etc/ObjectControlModal";
 import { ObjModalState } from "../../recoil/atoms/ObjModalState";
 import { OnGizmoState } from "../../recoil/atoms/OnGizmoState";
 import { PivotControls } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 
 const Object3D = ({ meshPath, name, position }) => {
   const [gltf, setGltf] = useState(null);
@@ -19,6 +20,8 @@ const Object3D = ({ meshPath, name, position }) => {
   const [onGizmo, setOnGizmo] = useRecoilState(OnGizmoState);
   const [htmlPosition, setHtmlPosition] = useState(new THREE.Vector3());
   const meshRef = useRef();
+
+  const { scene } = useThree();
 
   useEffect(() => {
     if (meshPath) {
@@ -48,6 +51,23 @@ const Object3D = ({ meshPath, name, position }) => {
     }
   }, [meshPath]);
 
+  useEffect(() => {
+    if (gltf && meshRef.current) {
+      const box = new THREE.Box3().setFromObject(meshRef.current);
+      const helper = new THREE.Box3Helper(box, 0xffff00);
+      scene.add(helper);
+
+      // Cleanup function to remove the helper when the component unmounts or re-renders
+      return () => {
+        scene.remove(helper);
+      };
+    }
+  }, [gltf, scene]); // Depend on gltf to trigger after it's loaded
+
+  const updateBoxHelper = () => {
+    console.log("update");
+  };
+
   if (!gltf) return null;
 
   return (
@@ -55,14 +75,19 @@ const Object3D = ({ meshPath, name, position }) => {
       depthTest={false}
       position={position}
       scale={0.5}
-      onDrag={() => {
+      onDragStart={() => {
         setOnGizmo(true);
+      }}
+      onDrag={() => {
+        updateBoxHelper();
       }}
       onDragEnd={() => {
         setOnGizmo(false);
       }}
       visible={selectedObj === name}
-      enabled={false}
+      disableAxes={selectedObj !== name}
+      disableSliders={selectedObj !== name}
+      disableRotations={selectedObj !== name}
     >
       <primitive
         ref={meshRef}

@@ -1,8 +1,5 @@
 import { Canvas } from "@react-three/fiber";
 import { Bvh, Environment, OrbitControls } from "@react-three/drei";
-import Plane from "./Plane";
-// import ElectronicsGroup from "./3Dmodel/Electronics/ElectronicsGroup";
-// import FurnitureGroup from "./3Dmodel/Furniture/FurnitureGroup";
 import { Suspense, useEffect, useRef } from "react";
 
 import { Selection } from "@react-three/postprocessing";

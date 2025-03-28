@@ -12,13 +12,10 @@ import { SelectedObjState } from "../recoil/atoms/SelectedObjState";
 import { ObjModalState } from "../recoil/atoms/ObjModalState";
 import { useThree } from "@react-three/fiber";
 import { ViewModeState } from "../recoil/atoms/ViewModeState";
+import { OrthographicCamera } from "@react-three/drei";
 
 const Scene = () => {
-  const [hovered, hover] = useState(null);
-  const [onMoving, setOnMoving] = useState(false);
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
-  const [mouse2D, setMouse2D] = useState();
-  const [savedTarget, setSavedTarget] = useState(new THREE.Vector3(0, 0, 0));
 
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
   const [objModal, setObjModal] = useRecoilState(ObjModalState);
@@ -27,14 +24,7 @@ const Scene = () => {
   const [viewMode, setViewMode] = useRecoilState(ViewModeState);
 
   useEffect(() => {
-    if (viewMode === "2D") {
-      camera.position.set(0, 7, 0);
-      camera.lookAt(new THREE.Vector3(0, 0, 0));
-      camera.near = 0.1;
-      camera.far = 20;
-      camera.zoom = 1;
-      camera.updateProjectionMatrix();
-    } else if (viewMode === "3D") {
+    if (viewMode === "3D") {
       camera.position.set(0, 3, 3);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
       camera.fov = 75;
@@ -53,16 +43,11 @@ const Scene = () => {
       );
       setSelectedObj(null);
     }
-    setSavedTarget(point);
   };
 
   return (
     <>
       <Plane
-        onPointerMove={(e) => {
-          e.stopPropagation();
-          setSavedTarget(e.point.clone());
-        }}
         onClick={(e) => {
           setObjModal(null);
           handlePlaneClick(e.point);
@@ -76,15 +61,14 @@ const Scene = () => {
         const key = `addedObj${index}`;
         return (
           <Select enabled={selectedObj === e.name} key={key}>
-            <Object3D
-              position={selectedObj === e.name ? savedTarget : e.position}
-              meshPath={e.meshPath}
-              name={e.name}
-            />
+            <Object3D meshPath={e.meshPath} name={e.name} />
           </Select>
         );
-        // return <primitive position={e.position} />;
       })}
+
+      {viewMode === "2D" ? (
+        <OrthographicCamera makeDefault position={[0, 7, 0]} zoom={100} />
+      ) : null}
     </>
   );
 };
