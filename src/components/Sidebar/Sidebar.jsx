@@ -7,13 +7,13 @@ import { AddedObjListState } from "../../recoil/atoms/AddedObjListState";
 import { SelectedObjState } from "../../recoil/atoms/SelectedObjState";
 import { OnGizmoState } from "../../recoil/atoms/OnGizmoState";
 
-function Sidebar({ ObjList }) {
+function Sidebar({ objList }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
   const [onGizmo, setOnGizmo] = useRecoilState(OnGizmoState);
-  const ObjListArr = Object.keys(ObjList);
+  const ObjListArr = Object.keys(objList);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -92,8 +92,8 @@ function Sidebar({ ObjList }) {
           <ul className="space-y-2">
             {ObjListArr.map((e, index) => {
               const key = `sidebarObjectList${index}`;
-              const imagePath = ObjList[e]["thumbnail"];
-              const meshPath = ObjList[e]["mesh"];
+              const imagePath = objList[e]["thumbnail"];
+              const meshPath = objList[e]["mesh"];
               const name = e + "-" + addedObjList.length;
               return (
                 <li

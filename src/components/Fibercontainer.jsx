@@ -12,7 +12,7 @@ import ViewModeUI from "./UI/ViewModeUI";
 
 const FiberContainer = () => {
   const objectListUrl = url.MART_API_URL + "objects/list.json";
-  const [ObjList, setObjList] = useRecoilState(ObjListState);
+  const [objList, setObjList] = useRecoilState(ObjListState);
   const [objLoader, setObjLoader] = useRecoilState(ObjLoaderState);
 
   const getList = () => {
@@ -30,7 +30,7 @@ const FiberContainer = () => {
       <Experience />
       <Loader />
       {objLoader ? <SpinnerLoader /> : null}
-      <Sidebar ObjList={ObjList} />
+      <Sidebar objList={objList} />
       <ViewModeUI />
     </>
   );

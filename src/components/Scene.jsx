@@ -13,6 +13,7 @@ import { ObjModalState } from "../recoil/atoms/ObjModalState";
 import { useThree } from "@react-three/fiber";
 import { ViewModeState } from "../recoil/atoms/ViewModeState";
 import { OrthographicCamera } from "@react-three/drei";
+import Room from "./3Dmodel/Room/Room";
 
 const Scene = () => {
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
@@ -56,6 +57,7 @@ const Scene = () => {
           setObjModal(null);
         }}
       />
+      <Room />
 
       {addedObjList.map((e, index) => {
         const key = `addedObj${index}`;
@@ -67,7 +69,7 @@ const Scene = () => {
       })}
 
       {viewMode === "2D" ? (
-        <OrthographicCamera makeDefault position={[0, 7, 0]} zoom={100} />
+        <OrthographicCamera makeDefault position={[0, 10, 0]} zoom={49} />
       ) : null}
     </>
   );
