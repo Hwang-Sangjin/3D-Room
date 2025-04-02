@@ -14,6 +14,7 @@ import { useThree } from "@react-three/fiber";
 import { ViewModeState } from "../recoil/atoms/ViewModeState";
 import { OrthographicCamera } from "@react-three/drei";
 import Room from "./3Dmodel/Room/Room";
+import RoomCollisionObjects from "./3Dmodel/Room/RoomCollisionObjects";
 
 const Scene = () => {
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
@@ -58,6 +59,7 @@ const Scene = () => {
         }}
       />
       <Room />
+      <RoomCollisionObjects />
 
       {addedObjList.map((e, index) => {
         const key = `addedObj${index}`;

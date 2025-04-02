@@ -55,7 +55,7 @@ const Object3D = ({ meshPath, name, position }) => {
     if (gltf && meshRef.current) {
       const box = new THREE.Box3().setFromObject(meshRef.current);
       const helper = new THREE.Box3Helper(box, 0xffff00);
-      scene.add(helper);
+      //scene.add(helper);
 
       // Cleanup function to remove the helper when the component unmounts or re-renders
       return () => {

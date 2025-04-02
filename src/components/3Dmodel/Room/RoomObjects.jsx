@@ -1,9 +1,12 @@
-import { useGLTF } from "@react-three/drei";
+import { Center, PivotControls, useGLTF } from "@react-three/drei";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { ObjListState } from "../../../recoil/atoms/ObjListState";
 import url from "../../../constants/url";
+import { SelectedObjState } from "../../../recoil/atoms/SelectedObjState";
+import { ObjModalState } from "../../../recoil/atoms/ObjModalState";
+import { OnGizmoState } from "../../../recoil/atoms/OnGizmoState";
 
 const RoomObjects = () => {
   const placedObjectsUrl =
@@ -11,6 +14,9 @@ const RoomObjects = () => {
 
   const [placedObjects, setPlacedObjects] = useState();
   const [objList, setObjList] = useRecoilState(ObjListState);
+  const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
+  const [objModal, setObjModal] = useRecoilState(ObjModalState);
+  const [onGizmo, setOnGizmo] = useRecoilState(OnGizmoState);
 
   useEffect(() => {
     axios.get(placedObjectsUrl).then((res) => {
@@ -18,9 +24,9 @@ const RoomObjects = () => {
     });
   }, []);
 
-  useEffect(() => {
-    console.log(placedObjects);
-  }, [placedObjects]);
+  const updateBoxHelper = () => {
+    console.log("update");
+  };
 
   return (
     <>
@@ -30,16 +36,45 @@ const RoomObjects = () => {
             const glbUrl =
               url.MART_API_URL + "objects/" + objList[e.name]["mesh"];
             const { scene } = useGLTF(glbUrl);
-            console.log(scene);
+            const name = e.name;
 
             return (
-              <primitive
-                position={[e.tx, e.ty, e.tz]}
+              <PivotControls
+                offset={[e.tx, e.ty, e.tz]}
                 rotation={[e.rx, e.ry, e.rz]}
-                scale={[e.sx, e.sy, e.sz]}
                 key={key}
-                object={scene}
-              />
+                visible={selectedObj === name}
+                disableAxes={selectedObj !== name}
+                disableSliders={selectedObj !== name}
+                disableRotations={selectedObj !== name}
+                scale={0.5}
+                onDragStart={() => {
+                  setOnGizmo(true);
+                }}
+                onDrag={() => {
+                  updateBoxHelper();
+                }}
+                onDragEnd={() => {
+                  setOnGizmo(false);
+                }}
+              >
+                <primitive
+                  position={[e.tx, e.ty, e.tz]}
+                  rotation={[e.rx, e.ry, e.rz]}
+                  scale={[e.sx, e.sy, e.sz]}
+                  object={scene}
+                  onClick={(e) => {
+                    console.log();
+                    e.stopPropagation();
+                    setSelectedObj(name);
+                    setObjModal(null);
+                  }}
+                  onContextMenu={(e) => {
+                    e.stopPropagation();
+                    setObjModal(name);
+                  }}
+                />
+              </PivotControls>
             );
           })
         : null}
