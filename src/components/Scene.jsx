@@ -10,7 +10,7 @@ import { AddedObjListState } from "../recoil/atoms/AddedObjListState";
 import Object3D from "./3Dmodel/Object3D";
 import { SelectedObjState } from "../recoil/atoms/SelectedObjState";
 import { ObjModalState } from "../recoil/atoms/ObjModalState";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { ViewModeState } from "../recoil/atoms/ViewModeState";
 import { OrthographicCamera } from "@react-three/drei";
 import Room from "./3Dmodel/Room/Room";
@@ -20,6 +20,7 @@ const Scene = () => {
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
 
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
+
   const [objModal, setObjModal] = useRecoilState(ObjModalState);
 
   const { camera } = useThree();

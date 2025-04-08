@@ -18,15 +18,16 @@ const Experience = () => {
   return (
     <Canvas shadows camera={{ position: [0, 5, 5] }}>
       <Suspense fallback={null}>
-        <Environment preset="city" />
-        <Selection>
-          <Effects />
-          <Scene />
-        </Selection>
-        <OrbitControls enableRotate={!onGizmo && viewMode !== "2D"} />
-        <ambientLight intensity={0.1} />
-        <directionalLight position={[-3, 5, 5]} intensity={2.5} />
-        {/* <directionalLight
+        <Bvh firstHitOnly>
+          <Environment preset="city" />
+          <Selection>
+            <Effects />
+            <Scene />
+          </Selection>
+          <OrbitControls enableRotate={!onGizmo && viewMode !== "2D"} />
+          <ambientLight intensity={0.1} />
+          <directionalLight position={[-3, 5, 5]} intensity={2.5} />
+          {/* <directionalLight
         shadow-mapSize-width={4096}
         shadow-mapSize-height={4096}
         shadow-camera-far={50}
@@ -38,6 +39,7 @@ const Experience = () => {
         castShadow
         intensity={2.5}
       /> */}
+        </Bvh>
       </Suspense>
     </Canvas>
   );

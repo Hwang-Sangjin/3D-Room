@@ -9,7 +9,7 @@ import * as THREE from "three";
 import ObjectControlModal from "../etc/ObjectControlModal";
 import { ObjModalState } from "../../recoil/atoms/ObjModalState";
 import { OnGizmoState } from "../../recoil/atoms/OnGizmoState";
-import { PivotControls } from "@react-three/drei";
+import { Edges, PivotControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 
 const Object3D = ({ meshPath, name, position }) => {
@@ -20,9 +20,10 @@ const Object3D = ({ meshPath, name, position }) => {
   const [onGizmo, setOnGizmo] = useRecoilState(OnGizmoState);
   const [htmlPosition, setHtmlPosition] = useState(new THREE.Vector3());
   const meshRef = useRef();
+  const boxRef = useRef();
+  const { scene, gl, camera, raycaster } = useThree(); // Access R3F context
 
-  const { scene } = useThree();
-
+  // Load GLTF model
   useEffect(() => {
     if (meshPath) {
       setObjLoader(true);
@@ -51,21 +52,42 @@ const Object3D = ({ meshPath, name, position }) => {
     }
   }, [meshPath]);
 
+  // Set up Box3Helper and improve precision
   useEffect(() => {
     if (gltf && meshRef.current) {
       const box = new THREE.Box3().setFromObject(meshRef.current);
-      const helper = new THREE.Box3Helper(box, 0xffff00);
-      //scene.add(helper);
+      const helper = new THREE.Box3Helper(box, 0xffffff);
+      helper.visible = false;
+      meshRef.current.add(helper);
+      boxRef.current = helper;
 
-      // Cleanup function to remove the helper when the component unmounts or re-renders
+      // Optional: Tighten the bounding box for better precision
+      meshRef.current.traverse((child) => {
+        if (child.isMesh) {
+          child.geometry.computeBoundingSphere(); // Ensure geometry bounds are computed
+          child.geometry.computeBoundingBox();
+        }
+      });
+
       return () => {
         scene.remove(helper);
       };
     }
-  }, [gltf, scene]); // Depend on gltf to trigger after it's loaded
+  }, [gltf, scene]);
 
-  const updateBoxHelper = () => {
-    console.log("update");
+  // Custom pointer event handlers with improved precision
+  const handlePointerOver = (e) => {
+    e.stopPropagation();
+    if (boxRef.current) {
+      boxRef.current.visible = true;
+    }
+  };
+
+  const handlePointerOut = (e) => {
+    e.stopPropagation();
+    if (boxRef.current) {
+      boxRef.current.visible = false;
+    }
   };
 
   if (!gltf) return null;
@@ -75,15 +97,9 @@ const Object3D = ({ meshPath, name, position }) => {
       depthTest={false}
       position={position}
       scale={0.5}
-      onDragStart={() => {
-        setOnGizmo(true);
-      }}
-      onDrag={() => {
-        updateBoxHelper();
-      }}
-      onDragEnd={() => {
-        setOnGizmo(false);
-      }}
+      onDragStart={() => setOnGizmo(true)}
+      onDrag={() => {}}
+      onDragEnd={() => setOnGizmo(false)}
       visible={selectedObj === name}
       disableAxes={selectedObj !== name}
       disableSliders={selectedObj !== name}
@@ -101,6 +117,23 @@ const Object3D = ({ meshPath, name, position }) => {
         onContextMenu={(e) => {
           e.stopPropagation();
           setObjModal(name);
+        }}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
+        // Optional: Improve raycasting precision
+        raycast={(raycaster, intersects) => {
+          const mesh = meshRef.current;
+          if (!mesh) return;
+
+          // Traverse all meshes in the GLTF for precise hit detection
+          mesh.traverse((child) => {
+            if (child.isMesh) {
+              const intersection = raycaster.intersectObject(child, false);
+              if (intersection.length > 0) {
+                intersects.push(intersection[0]);
+              }
+            }
+          });
         }}
       >
         {name === objModal ? (
