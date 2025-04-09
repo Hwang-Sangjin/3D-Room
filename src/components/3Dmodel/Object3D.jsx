@@ -77,14 +77,12 @@ const Object3D = ({ meshPath, name, position }) => {
 
   // Custom pointer event handlers with improved precision
   const handlePointerOver = (e) => {
-    e.stopPropagation();
     if (boxRef.current) {
       boxRef.current.visible = true;
     }
   };
 
   const handlePointerOut = (e) => {
-    e.stopPropagation();
     if (boxRef.current) {
       boxRef.current.visible = false;
     }
@@ -118,8 +116,14 @@ const Object3D = ({ meshPath, name, position }) => {
           e.stopPropagation();
           setObjModal(name);
         }}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          handlePointerOver(e);
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          handlePointerOut(e);
+        }}
         // Optional: Improve raycasting precision
         raycast={(raycaster, intersects) => {
           const mesh = meshRef.current;
