@@ -124,21 +124,6 @@ const Object3D = ({ meshPath, name, position }) => {
           e.stopPropagation();
           handlePointerOut(e);
         }}
-        // Optional: Improve raycasting precision
-        raycast={(raycaster, intersects) => {
-          const mesh = meshRef.current;
-          if (!mesh) return;
-
-          // Traverse all meshes in the GLTF for precise hit detection
-          mesh.traverse((child) => {
-            if (child.isMesh) {
-              const intersection = raycaster.intersectObject(child, false);
-              if (intersection.length > 0) {
-                intersects.push(intersection[0]);
-              }
-            }
-          });
-        }}
       >
         {name === objModal ? (
           <ObjectControlModal
