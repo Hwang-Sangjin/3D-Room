@@ -11,13 +11,19 @@ const Room = () => {
   const { scene } = useGLTF(url);
 
   return (
-    <primitive
-      position={[-5, 1.3, -10]}
-      rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-      object={scene}
-    >
-      <RoomObjects />
-    </primitive>
+    <group>
+      <primitive
+        position={[-5, 1.3, -10]}
+        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+        object={scene}
+      ></primitive>
+      <group
+        position={[-5, 1.3, -10]}
+        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+      >
+        <RoomObjects />
+      </group>
+    </group>
   );
 };
 

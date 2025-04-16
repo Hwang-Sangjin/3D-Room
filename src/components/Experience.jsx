@@ -16,7 +16,13 @@ const Experience = () => {
   const [viewMode, setViewMode] = useRecoilState(ViewModeState);
 
   return (
-    <Canvas shadows camera={{ position: [0, 5, 5] }}>
+    <Canvas
+      onCreated={({ raycaster }) => {
+        raycaster.params.Mesh.threshold = 0.1; // if you're using points or lines, tweak accordingly
+      }}
+      shadows
+      camera={{ position: [0, 5, 5] }}
+    >
       <Suspense fallback={null}>
         <Bvh firstHitOnly>
           <Environment preset="city" />

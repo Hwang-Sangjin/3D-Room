@@ -8,7 +8,7 @@ const RoomCollisionObjects = () => {
 
   return (
     <primitive
-      visible={true}
+      visible={false}
       position={[-5, 1.3, -10]}
       rotation={[-Math.PI / 2, 0, Math.PI / 2]}
       object={scene}

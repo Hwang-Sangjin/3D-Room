@@ -32,15 +32,15 @@ const RoomObjects = () => {
             const name = e.name;
 
             return (
-              <Select
+              <Object3D
                 position={[e.tx, e.ty, e.tz]}
                 rotation={[e.rx, e.ry, e.rz]}
                 scale={[e.sx, e.sy, e.sz]}
                 enabled={selectedObj === e.name}
                 key={key}
-              >
-                <Object3D meshPath={glbUrl} name={name} />
-              </Select>
+                meshPath={glbUrl}
+                name={name}
+              />
             );
           })
         : null}

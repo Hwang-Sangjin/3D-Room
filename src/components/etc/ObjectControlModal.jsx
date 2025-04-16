@@ -24,7 +24,12 @@ const ObjectControlModal = ({ name, meshPath, position, scene }) => {
           Move
         </button>
         <br />
-        <button className="p-1" onClick={() => {}}>
+        <button
+          className="p-1"
+          onClick={() => {
+            console.log("Rotate");
+          }}
+        >
           Rotate
         </button>
         <br />

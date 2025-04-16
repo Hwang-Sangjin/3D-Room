@@ -12,7 +12,7 @@ import { OnGizmoState } from "../../recoil/atoms/OnGizmoState";
 import { Edges, PivotControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 
-const Object3D = ({ meshPath, name, position }) => {
+const Object3D = ({ meshPath, name, position, rotation, scale }) => {
   const [gltf, setGltf] = useState(null);
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
   const [objLoader, setObjLoader] = useRecoilState(ObjLoaderState);
@@ -64,7 +64,6 @@ const Object3D = ({ meshPath, name, position }) => {
       // Optional: Tighten the bounding box for better precision
       meshRef.current.traverse((child) => {
         if (child.isMesh) {
-          child.geometry.computeBoundingSphere(); // Ensure geometry bounds are computed
           child.geometry.computeBoundingBox();
         }
       });
@@ -76,65 +75,34 @@ const Object3D = ({ meshPath, name, position }) => {
   }, [gltf, scene]);
 
   // Custom pointer event handlers with improved precision
-  const handlePointerOver = (e) => {
-    if (boxRef.current) {
-      boxRef.current.visible = true;
-    }
-  };
-
-  const handlePointerOut = (e) => {
-    if (boxRef.current) {
-      boxRef.current.visible = false;
-    }
-  };
 
   if (!gltf) return null;
 
   return (
-    <PivotControls
-      depthTest={false}
-      position={position}
-      scale={0.5}
-      onDragStart={() => setOnGizmo(true)}
-      onDrag={() => {}}
-      onDragEnd={() => setOnGizmo(false)}
-      visible={selectedObj === name}
-      disableAxes={selectedObj !== name}
-      disableSliders={selectedObj !== name}
-      disableRotations={selectedObj !== name}
-    >
-      <primitive
-        ref={meshRef}
-        object={gltf.scene}
-        name={name}
-        onClick={(e) => {
-          e.stopPropagation();
-          setSelectedObj(name);
-          setObjModal(null);
-        }}
-        onContextMenu={(e) => {
-          e.stopPropagation();
-          setObjModal(name);
-        }}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          handlePointerOver(e);
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          handlePointerOut(e);
-        }}
+    <group position={position} rotation={rotation} scale={scale}>
+      <PivotControls
+        depthTest={false}
+        scale={0.5}
+        onDragStart={() => setOnGizmo(true)}
+        onDrag={() => {}}
+        onDragEnd={() => setOnGizmo(false)}
+        visible={selectedObj === name}
+        disableAxes={selectedObj !== name}
+        disableSliders={selectedObj !== name}
+        disableRotations={selectedObj !== name}
       >
-        {name === objModal ? (
-          <ObjectControlModal
-            scene={gltf.scene.matrix}
-            name={name}
-            meshPath={meshPath}
-            position={htmlPosition}
-          />
-        ) : null}
-      </primitive>
-    </PivotControls>
+        <primitive ref={meshRef} object={gltf.scene} name={name}>
+          {name === objModal ? (
+            <ObjectControlModal
+              scene={gltf.scene.matrix}
+              name={name}
+              meshPath={meshPath}
+              position={htmlPosition}
+            />
+          ) : null}
+        </primitive>
+      </PivotControls>
+    </group>
   );
 };
 

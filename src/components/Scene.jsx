@@ -15,6 +15,7 @@ import { ViewModeState } from "../recoil/atoms/ViewModeState";
 import { OrthographicCamera } from "@react-three/drei";
 import Room from "./3Dmodel/Room/Room";
 import RoomCollisionObjects from "./3Dmodel/Room/RoomCollisionObjects";
+import PlyTest from "./3Dmodel/PlyTest";
 
 const Scene = () => {
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
@@ -25,6 +26,7 @@ const Scene = () => {
 
   const { camera } = useThree();
   const [viewMode, setViewMode] = useRecoilState(ViewModeState);
+  // Get the priced item
 
   useEffect(() => {
     if (viewMode === "3D") {
@@ -37,6 +39,18 @@ const Scene = () => {
     }
   }, [viewMode, camera]);
 
+  useEffect(() => {
+    if (selectedObj) {
+      setObjModal(null);
+    }
+  }, [selectedObj]);
+
+  useEffect(() => {
+    if (objModal) {
+      setSelectedObj(null);
+    }
+  }, [objModal]);
+
   const handlePlaneClick = (point) => {
     if (selectedObj !== null) {
       setAddedObjList(
@@ -46,6 +60,30 @@ const Scene = () => {
       );
       setSelectedObj(null);
     }
+  };
+
+  const handleObjectClick = (e) => {
+    let intersection = e.intersections;
+    intersection = intersection.filter(
+      (obj) => obj.object.type !== "Box3Helper"
+    );
+
+    const group = intersection[0].object.parent;
+    const boxHelper = group.children.filter((e) => e.type === "Box3Helper")[0];
+
+    setSelectedObj(group.name);
+  };
+
+  const handleObjectContextClick = (e) => {
+    let intersection = e.intersections;
+    intersection = intersection.filter(
+      (obj) => obj.object.type !== "Box3Helper"
+    );
+
+    const group = intersection[0].object.parent;
+    const boxHelper = group.children.filter((e) => e.type === "Box3Helper")[0];
+
+    setObjModal(group.name);
   };
 
   return (
@@ -59,13 +97,36 @@ const Scene = () => {
           setObjModal(null);
         }}
       />
-      <Room />
-      <RoomCollisionObjects />
+      {/* <Room />
+      <RoomCollisionObjects /> */}
 
       {addedObjList.map((e, index) => {
         const key = `addedObj${index}`;
         return (
-          <Select enabled={selectedObj === e.name} key={key}>
+          <Select
+            onClick={(e) => {
+              e.stopPropagation();
+              handleObjectClick(e);
+              // setSelectedObj(e.name);
+              // setObjModal(null);
+            }}
+            onContextMenu={(e) => {
+              e.stopPropagation();
+              handleObjectContextClick(e);
+              // console.log(e);
+              // setObjModal(e.name);
+            }}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              //handlePointerOver(e);
+            }}
+            onPointerOut={(e) => {
+              e.stopPropagation();
+              //handlePointerOut(e);
+            }}
+            enabled={selectedObj === e.name}
+            key={key}
+          >
             <Object3D meshPath={e.meshPath} name={e.name} />
           </Select>
         );
@@ -74,6 +135,8 @@ const Scene = () => {
       {viewMode === "2D" ? (
         <OrthographicCamera makeDefault position={[0, 10, 0]} zoom={49} />
       ) : null}
+
+      {/* <PlyTest /> */}
     </>
   );
 };
