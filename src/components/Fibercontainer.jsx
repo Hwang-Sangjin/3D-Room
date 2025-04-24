@@ -1,5 +1,5 @@
 import { Loader } from "@react-three/drei";
-import Experience from "./Experience";
+
 import Sidebar from "./Sidebar/Sidebar";
 import axios from "axios";
 import { useEffect } from "react";
@@ -9,6 +9,8 @@ import { ObjListState } from "../recoil/atoms/ObjListState";
 import SpinnerLoader from "./etc/SpinnerLoader";
 import { ObjLoaderState } from "../recoil/atoms/ObjLoaderState";
 import ViewModeUI from "./UI/ViewModeUI";
+import RoomExperience from "./RoomExperience";
+import { useParams } from "react-router";
 
 const FiberContainer = () => {
   const objectListUrl = url.MART_API_URL + "objects/list.json";
@@ -27,7 +29,7 @@ const FiberContainer = () => {
 
   return (
     <>
-      <Experience />
+      <RoomExperience />
       <Loader />
       {objLoader ? <SpinnerLoader /> : null}
       <Sidebar objList={objList} />

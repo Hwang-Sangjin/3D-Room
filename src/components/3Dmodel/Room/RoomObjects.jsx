@@ -8,28 +8,38 @@ import { SelectedObjState } from "../../../recoil/atoms/SelectedObjState";
 import { ObjModalState } from "../../../recoil/atoms/ObjModalState";
 import { OnGizmoState } from "../../../recoil/atoms/OnGizmoState";
 import Object3D from "../Object3D";
+import { useSearchParams } from "react-router";
 
 const RoomObjects = () => {
-  const placedObjectsUrl =
-    "https://3dr-data.io.naver.com/v1/file/3DR/poc/1111111400/scene/object.json?1743387906350";
+  const [searchParams] = useSearchParams();
+  const estateID = searchParams.get("estateID");
+  const [loading, setLoading] = useState(true);
 
   const [placedObjects, setPlacedObjects] = useState();
   const [objList, setObjList] = useRecoilState(ObjListState);
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
 
   useEffect(() => {
-    axios.get(placedObjectsUrl).then((res) => {
-      setPlacedObjects(res.data.objects);
-    });
+    if (!estateID) {
+      setError("No estate ID provided");
+      setLoading(false);
+      return;
+    }
+
+    axios
+      .get(`${url.MART_API_URL}${estateID}/scene/object.json?${Date.now()}`)
+      .then((res) => {
+        setPlacedObjects(res.data.objects);
+      });
   }, []);
 
   return (
     <>
       {placedObjects
         ? placedObjects.map((e, index) => {
-            const key = `placedObject` + e.name + index;
-            const glbUrl = objList[e.name]["mesh"];
-            const name = e.name;
+            const name = e.name.split("---")[0];
+            const key = `placedObject` + name + index;
+            const glbUrl = objList[name]["mesh"];
 
             return (
               <Object3D

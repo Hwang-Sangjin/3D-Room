@@ -12,7 +12,7 @@ import { OnGizmoState } from "../../recoil/atoms/OnGizmoState";
 import { Edges, PivotControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 
-const Object3D = ({ meshPath, name, position, rotation, scale }) => {
+const Object3D = ({ position, addedObjGroupRef, meshPath, name }) => {
   const [gltf, setGltf] = useState(null);
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
   const [objLoader, setObjLoader] = useRecoilState(ObjLoaderState);
@@ -20,9 +20,76 @@ const Object3D = ({ meshPath, name, position, rotation, scale }) => {
   const [onGizmo, setOnGizmo] = useRecoilState(OnGizmoState);
   const [htmlPosition, setHtmlPosition] = useState(new THREE.Vector3());
   const meshRef = useRef();
+  const groupRef = useRef();
   const boxRef = useRef();
   const { scene, gl, camera, raycaster } = useThree(); // Access R3F context
 
+  const snapThreshold = 0.2; // Adjust this as needed
+
+  const handleDrag = () => {
+    const movingObject = groupRef.current;
+    if (!movingObject) return;
+
+    // Get the moving object's bounding box
+    const movingBox = new THREE.Box3().setFromObject(movingObject);
+    const movingCenter = new THREE.Vector3();
+    movingBox.getCenter(movingCenter);
+    const movingSize = new THREE.Vector3();
+    movingBox.getSize(movingSize);
+
+    addedObjGroupRef.current.children.forEach((otherObject) => {
+      if (otherObject.children[0] === movingObject) return;
+
+      console.log(otherObject.children[0], movingObject);
+
+      // Get the other object's bounding box
+      const otherBox = new THREE.Box3().setFromObject(otherObject.children[0]);
+      const otherCenter = new THREE.Vector3();
+      otherBox.getCenter(otherCenter);
+      const otherSize = new THREE.Vector3();
+      otherBox.getSize(otherSize);
+
+      // **Snap to the closest edge of the other object**
+      if (Math.abs(movingBox.min.x - otherBox.max.x) < snapThreshold) {
+        movingObject.position.x = otherBox.max.x + movingSize.x / 2;
+      }
+      if (Math.abs(movingBox.max.x - otherBox.min.x) < snapThreshold) {
+        movingObject.position.x = otherBox.min.x - movingSize.x / 2;
+      }
+      if (Math.abs(movingBox.min.x - otherBox.min.x) < snapThreshold) {
+        movingObject.position.x = otherBox.min.x + movingSize.x / 2;
+      }
+      if (Math.abs(movingBox.max.x - otherBox.max.x) < snapThreshold) {
+        movingObject.position.x = otherBox.max.x - movingSize.x / 2;
+      }
+
+      if (Math.abs(movingBox.min.y - otherBox.max.y) < snapThreshold) {
+        movingObject.position.y = otherBox.max.y + movingSize.y / 2;
+      }
+      if (Math.abs(movingBox.max.y - otherBox.min.y) < snapThreshold) {
+        movingObject.position.y = otherBox.min.y - movingSize.y / 2;
+      }
+      if (Math.abs(movingBox.min.y - otherBox.min.y) < snapThreshold) {
+        movingObject.position.y = otherBox.min.y + movingSize.y / 2;
+      }
+      if (Math.abs(movingBox.max.y - otherBox.max.y) < snapThreshold) {
+        movingObject.position.y = otherBox.max.y - movingSize.y / 2;
+      }
+
+      if (Math.abs(movingBox.min.z - otherBox.max.z) < snapThreshold) {
+        movingObject.position.z = otherBox.max.z + movingSize.z / 2;
+      }
+      if (Math.abs(movingBox.max.z - otherBox.min.z) < snapThreshold) {
+        movingObject.position.z = otherBox.min.z - movingSize.z / 2;
+      }
+      if (Math.abs(movingBox.min.z - otherBox.min.z) < snapThreshold) {
+        movingObject.position.z = otherBox.min.z + movingSize.z / 2;
+      }
+      if (Math.abs(movingBox.max.z - otherBox.max.z) < snapThreshold) {
+        movingObject.position.z = otherBox.max.z - movingSize.z / 2;
+      }
+    });
+  };
   // Load GLTF model
   useEffect(() => {
     if (meshPath) {
@@ -79,13 +146,17 @@ const Object3D = ({ meshPath, name, position, rotation, scale }) => {
   if (!gltf) return null;
 
   return (
-    <group position={position} rotation={rotation} scale={scale}>
+    <group position={position} ref={groupRef}>
       <PivotControls
         depthTest={false}
         scale={0.5}
         onDragStart={() => setOnGizmo(true)}
-        onDrag={() => {}}
-        onDragEnd={() => setOnGizmo(false)}
+        onDrag={() => {
+          handleDrag();
+        }}
+        onDragEnd={() => {
+          setOnGizmo(false);
+        }}
         visible={selectedObj === name}
         disableAxes={selectedObj !== name}
         disableSliders={selectedObj !== name}

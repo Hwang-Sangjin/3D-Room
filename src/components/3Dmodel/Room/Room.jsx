@@ -1,28 +1,33 @@
 import { useGLTF } from "@react-three/drei";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import RoomObjects from "./RoomObjects";
+import url from "../../../constants/url";
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
-const Room = () => {
-  const url =
-    "https://3dr-data.io.naver.com/v1/file/3DR/poc/1111111400/scene/mesh/mesh.glb?1743387906350";
+const Room = ({ estateID, sceneData }) => {
+  const sceneMeshRef = useRef();
+  // Construct the URL for the GLTF model
+  const meshUrl = `${url.MART_API_URL}${estateID}/scene/mesh/mesh.glb?1743387906350`;
 
-  const { scene } = useGLTF(url);
+  // Load the GLTF model using useGLTF
+  const { scene } = useGLTF(meshUrl);
+
+  useEffect(() => {
+    const Box = new THREE.Box3().setFromObject(sceneMeshRef.current);
+    const movingCenter = new THREE.Vector3();
+    const BoxCenter = Box.getCenter(movingCenter);
+
+    sceneMeshRef.current.position.set(-movingCenter.x, 0, -movingCenter.z);
+  }, []);
 
   return (
     <group>
+      {/* Render the loaded GLTF scene */}
       <primitive
-        position={[-5, 1.3, -10]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+        ref={sceneMeshRef}
         object={scene}
-      ></primitive>
-      <group
-        position={[-5, 1.3, -10]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 2]}
-      >
-        <RoomObjects />
-      </group>
+        rotation={[-Math.PI / 2, 0, Math.PI / 2]} // Adjust rotation as needed
+        scale={[1, 1, 1]} // Adjust scale if necessary
+      />
     </group>
   );
 };

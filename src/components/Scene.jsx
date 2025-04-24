@@ -16,9 +16,12 @@ import { OrthographicCamera } from "@react-three/drei";
 import Room from "./3Dmodel/Room/Room";
 import RoomCollisionObjects from "./3Dmodel/Room/RoomCollisionObjects";
 import PlyTest from "./3Dmodel/PlyTest";
+import { useParams } from "react-router";
 
 const Scene = () => {
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
+  const id = useParams();
+  console.log(id);
 
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
 
@@ -26,6 +29,7 @@ const Scene = () => {
 
   const { camera } = useThree();
   const [viewMode, setViewMode] = useRecoilState(ViewModeState);
+  const addedObjGroupRef = useRef();
   // Get the priced item
 
   useEffect(() => {
@@ -99,38 +103,43 @@ const Scene = () => {
       />
       {/* <Room />
       <RoomCollisionObjects /> */}
-
-      {addedObjList.map((e, index) => {
-        const key = `addedObj${index}`;
-        return (
-          <Select
-            onClick={(e) => {
-              e.stopPropagation();
-              handleObjectClick(e);
-              // setSelectedObj(e.name);
-              // setObjModal(null);
-            }}
-            onContextMenu={(e) => {
-              e.stopPropagation();
-              handleObjectContextClick(e);
-              // console.log(e);
-              // setObjModal(e.name);
-            }}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              //handlePointerOver(e);
-            }}
-            onPointerOut={(e) => {
-              e.stopPropagation();
-              //handlePointerOut(e);
-            }}
-            enabled={selectedObj === e.name}
-            key={key}
-          >
-            <Object3D meshPath={e.meshPath} name={e.name} />
-          </Select>
-        );
-      })}
+      <group ref={addedObjGroupRef}>
+        {addedObjList.map((e, index) => {
+          const key = `addedObj${index}`;
+          return (
+            <Select
+              onClick={(e) => {
+                e.stopPropagation();
+                handleObjectClick(e);
+                // setSelectedObj(e.name);
+                // setObjModal(null);
+              }}
+              onContextMenu={(e) => {
+                e.stopPropagation();
+                handleObjectContextClick(e);
+                // console.log(e);
+                // setObjModal(e.name);
+              }}
+              onPointerOver={(e) => {
+                e.stopPropagation();
+                //handlePointerOver(e);
+              }}
+              onPointerOut={(e) => {
+                e.stopPropagation();
+                //handlePointerOut(e);
+              }}
+              enabled={selectedObj === e.name}
+              key={key}
+            >
+              <Object3D
+                addedObjGroupRef={addedObjGroupRef}
+                meshPath={e.meshPath}
+                name={e.name}
+              />
+            </Select>
+          );
+        })}
+      </group>
 
       {viewMode === "2D" ? (
         <OrthographicCamera makeDefault position={[0, 10, 0]} zoom={49} />
