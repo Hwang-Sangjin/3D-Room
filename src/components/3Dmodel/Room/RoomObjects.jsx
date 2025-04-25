@@ -35,7 +35,7 @@ const RoomObjects = () => {
 
   return (
     <>
-      {placedObjects
+      {/* {placedObjects
         ? placedObjects.map((e, index) => {
             const name = e.name.split("---")[0];
             const key = `placedObject` + name + index;
@@ -53,7 +53,7 @@ const RoomObjects = () => {
               />
             );
           })
-        : null}
+        : null} */}
     </>
   );
 };

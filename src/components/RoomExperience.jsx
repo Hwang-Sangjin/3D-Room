@@ -14,6 +14,7 @@ import Room from "./3Dmodel/Room/Room";
 import { useRecoilState } from "recoil";
 import { Selection } from "@react-three/postprocessing";
 import RoomScene from "./RoomScene";
+import { ViewModeState } from "../recoil/atoms/ViewModeState";
 
 function RoomExperience() {
   const [searchParams] = useSearchParams();
@@ -21,6 +22,7 @@ function RoomExperience() {
   const [sceneData, setSceneData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [viewMode, setViewMode] = useRecoilState(ViewModeState);
 
   // Set fake authorization cookie (temporary)
   useEffect(() => {
@@ -89,7 +91,9 @@ function RoomExperience() {
           <directionalLight position={[-3, 5, 5]} intensity={2.5} />
 
           <axesHelper args={[5]} />
-          <Grid position={[0, 0, 0]} args={[40, 30]} />
+          {viewMode === "2D" ? (
+            <Grid position={[0, 0, 0]} args={[40, 30]} />
+          ) : null}
         </Bvh>
       </Suspense>
     </Canvas>
