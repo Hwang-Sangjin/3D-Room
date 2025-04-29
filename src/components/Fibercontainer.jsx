@@ -10,9 +10,12 @@ import SpinnerLoader from "./etc/SpinnerLoader";
 import { ObjLoaderState } from "../recoil/atoms/ObjLoaderState";
 import ViewModeUI from "./UI/ViewModeUI";
 import RoomExperience from "./RoomExperience";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
+import EditorViewerUI from "./UI/EditorViewerUI";
 
 const FiberContainer = () => {
+  const [searchParams] = useSearchParams();
+  const estateID = searchParams.get("estateID");
   const objectListUrl = url.MART_API_URL + "objects/list.json";
   const [objList, setObjList] = useRecoilState(ObjListState);
   const [objLoader, setObjLoader] = useRecoilState(ObjLoaderState);
@@ -29,11 +32,12 @@ const FiberContainer = () => {
 
   return (
     <>
-      <RoomExperience />
+      <RoomExperience estateID={estateID} />
       <Loader />
       {objLoader ? <SpinnerLoader /> : null}
       <Sidebar objList={objList} />
       <ViewModeUI />
+      <EditorViewerUI type={"editor"} estateID={estateID} />
     </>
   );
 };

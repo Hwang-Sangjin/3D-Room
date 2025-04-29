@@ -1,14 +1,14 @@
-import { useGLTF } from "@react-three/drei";
-import url from "../../../constants/url";
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
+import url from "../../constants/url";
+import { useGLTF } from "@react-three/drei";
 import { useRecoilState } from "recoil";
-import { EditorOffsetState } from "../../../recoil/atoms/EditorOffsetState";
+import { EditorOffsetState } from "../../recoil/atoms/EditorOffsetState";
+import * as THREE from "three";
 
-const Room = ({ estateID }) => {
+const ViewerScene = ({ estateID }) => {
   const [editorOffset, setEditorOffset] = useRecoilState(EditorOffsetState);
   const sceneMeshRef = useRef();
-  // Construct the URL for the GLTF model
+
   const meshUrl = `${url.MART_API_URL}${estateID}/scene/mesh/mesh.glb?1743387906350`;
 
   // Load the GLTF model using useGLTF
@@ -40,4 +40,4 @@ const Room = ({ estateID }) => {
   );
 };
 
-export default Room;
+export default ViewerScene;

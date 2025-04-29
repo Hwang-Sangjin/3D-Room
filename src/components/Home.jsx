@@ -15,7 +15,7 @@ function SceneObjects() {
             className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition"
           >
             <Link
-              to={`/room?estateID=${estateID}`}
+              to={`/editor?estateID=${estateID}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block"

@@ -6,8 +6,7 @@ const ViewModeUI = () => {
   return (
     <div className="fixed flex flex-col top-4 right-4 h-screen ">
       <button
-        className={`m-2 bg-gray-400 p-2 rounded-md z-50 focus:outline-none transition-transform duration-300 ease-in-out transform"
-        }`}
+        className="bg-gray-500 text-white px-4 py-2 m-2 rounded-md shadow-md hover:bg-gray-600 focus:outline-none transition-transform duration-300 ease-in-out transform hover:scale-105"
         onClick={() => {
           setViewMode("2D");
         }}
@@ -15,8 +14,7 @@ const ViewModeUI = () => {
         2D
       </button>
       <button
-        className={`m-2 bg-gray-400 p-2 rounded-md z-50 focus:outline-none transition-transform duration-300 ease-in-out transform"
-        }`}
+        className="bg-gray-500 text-white px-4 py-2 m-2 rounded-md shadow-md hover:bg-gray-600 focus:outline-none transition-transform duration-300 ease-in-out transform hover:scale-105"
         onClick={() => {
           setViewMode("3D");
         }}
