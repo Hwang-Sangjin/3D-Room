@@ -21,7 +21,6 @@ import { useParams } from "react-router";
 const Scene = () => {
   const [selectedObj, setSelectedObj] = useRecoilState(SelectedObjState);
   const id = useParams();
-  console.log(id);
 
   const [addedObjList, setAddedObjList] = useRecoilState(AddedObjListState);
 

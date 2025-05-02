@@ -19,8 +19,6 @@ const EditorScene = ({ estateID, sceneData }) => {
   const orthographicCameraRef = useRef();
   const [sceneMetaData, setSceneMetaData] = useRecoilState(SceneMetaDataState);
 
-  console.log(sceneData);
-
   // Smoothly transition camera properties
   useEffect(() => {
     const perspectiveCam = perspectiveCameraRef.current;

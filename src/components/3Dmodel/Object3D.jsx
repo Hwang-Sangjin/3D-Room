@@ -40,8 +40,6 @@ const Object3D = ({ position, addedObjGroupRef, meshPath, name }) => {
     addedObjGroupRef.current.children.forEach((otherObject) => {
       if (otherObject.children[0] === movingObject) return;
 
-      console.log(otherObject.children[0], movingObject);
-
       // Get the other object's bounding box
       const otherBox = new THREE.Box3().setFromObject(otherObject.children[0]);
       const otherCenter = new THREE.Vector3();

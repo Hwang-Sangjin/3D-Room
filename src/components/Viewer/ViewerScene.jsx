@@ -4,39 +4,35 @@ import { useGLTF } from "@react-three/drei";
 import { useRecoilState } from "recoil";
 import { EditorOffsetState } from "../../recoil/atoms/EditorOffsetState";
 import * as THREE from "three";
+import { CookieDateState } from "../../recoil/atoms/CookieDateState";
 
-const ViewerScene = ({ estateID }) => {
+const ViewerScene = ({ estateID, meshData }) => {
   const [editorOffset, setEditorOffset] = useRecoilState(EditorOffsetState);
+  const [cookieDate, setCookieDate] = useRecoilState(CookieDateState);
   const sceneMeshRef = useRef();
 
-  const meshUrl = `${url.MART_API_URL}${estateID}/scene/mesh/mesh.glb?1743387906350`;
+  const fileName = meshData?.filename;
+
+  const meshUrl = `${url.MART_API_URL}${estateID}/scene/${fileName}?${cookieDate}`;
 
   // Load the GLTF model using useGLTF
   const { scene } = useGLTF(meshUrl);
 
   useEffect(() => {
-    if (editorOffset === null) {
-      const Box = new THREE.Box3().setFromObject(sceneMeshRef.current);
-      const movingCenter = new THREE.Vector3();
-      const BoxCenter = Box.getCenter(movingCenter);
-      sceneMeshRef.current.position.set(-BoxCenter.x, 0, -BoxCenter.z);
-
-      setEditorOffset([-BoxCenter.x, 0, -BoxCenter.z]);
-    } else {
+    if (editorOffset) {
       sceneMeshRef.current.position.set(...editorOffset);
     }
-  }, []);
+    // sceneMeshRef.current.children[0].material.color.set("#20FFFF");
+    // console.log(sceneMeshRef.current.children[0], scene);
+  }, [editorOffset]);
 
   return (
-    <group>
-      {/* Render the loaded GLTF scene */}
-      <primitive
-        ref={sceneMeshRef}
-        object={scene}
-        rotation={[-Math.PI / 2, 0, Math.PI / 2]} // Adjust rotation as needed
-        scale={[1, 1, 1]} // Adjust scale if necessary
-      />
-    </group>
+    <primitive
+      ref={sceneMeshRef}
+      object={scene}
+      rotation={[-Math.PI / 2, 0, Math.PI / 2]} // Adjust rotation as needed
+      scale={[1, 1, 1]} // Adjust scale if necessary
+    />
   );
 };
 

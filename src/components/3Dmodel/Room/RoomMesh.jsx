@@ -5,10 +5,12 @@ import * as THREE from "three";
 import { useRecoilState } from "recoil";
 import { EditorOffsetState } from "../../../recoil/atoms/EditorOffsetState";
 import { CookieDateState } from "../../../recoil/atoms/CookieDateState";
+import { RoomMeshBoxState } from "../../../recoil/atoms/RoomMeshBoxState";
 
 const RoomMesh = ({ estateID, meshData }) => {
   const [editorOffset, setEditorOffset] = useRecoilState(EditorOffsetState);
   const [cookieDate, setCookieDate] = useRecoilState(CookieDateState);
+  const [roomMeshBox, setRoomMeshBox] = useRecoilState(RoomMeshBoxState);
   const sceneMeshRef = useRef();
 
   const fileName = meshData?.filename;
@@ -21,9 +23,14 @@ const RoomMesh = ({ estateID, meshData }) => {
       const Box = new THREE.Box3().setFromObject(sceneMeshRef.current);
       const movingCenter = new THREE.Vector3();
       const BoxCenter = Box.getCenter(movingCenter);
-      sceneMeshRef.current.position.set(-BoxCenter.x, 0, -BoxCenter.z);
+      sceneMeshRef.current.position.set(
+        -BoxCenter.x,
+        -BoxCenter.y,
+        -BoxCenter.z
+      );
 
-      setEditorOffset([-BoxCenter.x, 0, -BoxCenter.z]);
+      setEditorOffset([-BoxCenter.x, -BoxCenter.y, -BoxCenter.z]);
+      setRoomMeshBox(Box);
     } else {
       sceneMeshRef.current.position.set(...editorOffset);
     }
